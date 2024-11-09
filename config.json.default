@@ -1,0 +1,6 @@
+{
+  "server": "IP",
+  "database": "Database name",
+  "username": "The Username",
+  "password": "The Password"
+}
