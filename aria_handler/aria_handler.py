@@ -1,6 +1,8 @@
 import pymssql
 import json
 import sys
+import time
+import threading
 
 # Path to config JSON
 config_json = 'config.json'
@@ -9,26 +11,63 @@ config_json = 'config.json'
 class AriaHandler:
     def __init__(self, config_json=config_json):
         self.connection = None
+        self.keep_alive_thread = None
+        self.keep_alive_flag = False
         self.default_code = 55
         with open(config_json) as f:
             self.config = json.load(f)
         # Connect
         self.connect()
 
-    def connect(self):
+
+    def connect(self, retry_interval=5, max_retries=3):
+        """Attempts to connect to the database, and starts a keep-alive thread if successful."""
+        attempt = 0
+        while attempt < max_retries:
+            try:
+                self.connection = pymssql.connect(**self.config['mssql'])
+                print("Connection established.")
+                # Start the keep-alive thread if the first connection succeeds
+                if not self.keep_alive_thread or not self.keep_alive_thread.is_alive():
+                    self.keep_alive_flag = True
+                    self.keep_alive_thread = threading.Thread(target=self.keep_connection_alive, daemon=True)
+                    self.keep_alive_thread.start()
+                return True
+            except pymssql.InterfaceError:
+                print("Connection failed: Incorrect server address or network issue.", file=sys.stderr)
+            except pymssql.OperationalError as e:
+                print("Connection failed: Invalid credentials or database issue.", file=sys.stderr)
+                print("Error details:", e)
+            attempt += 1
+            print(f"Retrying in {retry_interval} seconds... (Attempt {attempt}/{max_retries})")
+            time.sleep(retry_interval)
+
+        print("Max retries reached. Could not establish a connection.", file=sys.stderr)
+        return False
+
+    def keep_connection_alive(self, check_interval=30):
+        """Periodically checks the connection and reconnects if necessary."""
+        while self.keep_alive_flag:
+            if not self.is_connection_alive():
+                print("Connection lost. Reconnecting...")
+                self.connect()
+            time.sleep(check_interval)
+
+    def is_connection_alive(self):
+        """Checks if the connection is alive by executing a simple query."""
         try:
-            self.connection = pymssql.connect(**self.config['mssql'])
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
             return True
-        except pymssql.InterfaceError:
-            print("Connection failed: Incorrect server address or network issue.", file=sys.stderr)
-            return False
-        except pymssql.OperationalError as e:
-            print("Connection failed: Invalid credentials or database issue.", file=sys.stderr)
-            print("Error details:", e)
+        except (pymssql.InterfaceError, pymssql.OperationalError):
             return False
 
     def close(self):
-        self.connection.close()
+        """Stops the keep-alive thread and closes the connection."""
+        self.keep_alive_flag = False
+        if self.connection:
+            self.connection.close()
+            print("Connection closed.")
 
     def exec(self, command, arguments=None, mute=False):
         cursor = self.connection.cursor()
