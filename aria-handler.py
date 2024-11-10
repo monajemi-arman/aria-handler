@@ -10,18 +10,12 @@ class AriaHandler:
         self.connection = None
         with open(config_json) as f:
             self.config = json.load(f)
-        # Check config
-        params = ['server', 'username', 'password', 'database']
-        for param in params:
-            if param not in self.config.keys():
-                raise Exception("Wrong keys in config! The following should exist: " + str(params))
         # Connect
         self.connect()
 
     def connect(self):
         try:
-            self.connection = pymssql.connect(server=self.config['server'], user=self.config['username'],
-                                              password=self.config['password'], database=self.config['database'])
+            self.connection = pymssql.connect(**self.config['mssql'])
             return True
         except pymssql.InterfaceError:
             print("Connection failed: Incorrect server address or network issue.", file=sys.stderr)
@@ -86,7 +80,7 @@ class AriaHandler:
 
 def main():
     ah = AriaHandler(config_json)
-    print(ah.update_facheader_code(275229))
+    print(ah.get_price(11083))
 
 if __name__ == '__main__':
     main()

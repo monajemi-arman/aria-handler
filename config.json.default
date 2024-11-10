@@ -1,6 +1,9 @@
 {
-  "server": "IP",
-  "database": "Database name",
-  "username": "The Username",
-  "password": "The Password"
+  "mssql": {
+    "host": "IP",
+    "port": "PORT",
+    "database": "DB NAME",
+    "user": "USERNAME",
+    "password": "PASSWORD"
+  }
 }
