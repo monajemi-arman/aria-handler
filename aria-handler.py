@@ -220,11 +220,3 @@ class AriaHandler:
                 self.add_to_fac(fac_id, *product_amount)
             )
         return result
-
-def main():
-    ah = AriaHandler(config_json)
-    print(ah.add_products_to_noskhe(((11083, 3),)))
-
-
-if __name__ == '__main__':
-    main()
