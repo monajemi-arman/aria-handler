@@ -17,6 +17,7 @@ python -m pip install -e .
 
 # Usage
 * Prepare **_config.json_** according to template in _'config.json.default'_.
+  * As Aria program uses SQL Server 2008 (!), you must set tds_version in config.json to version 7.0, otherwise fails.  
 * Import handler
 ```python
 from aria_handler import AriaHandler
