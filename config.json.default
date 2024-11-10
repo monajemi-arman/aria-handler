@@ -1,0 +1,11 @@
+{
+  "user_id": USER_ID_INTEGER,
+  "mssql": {
+    "host": "IP",
+    "port": "PORT",
+    "database": "DB NAME",
+    "user": "USERNAME",
+    "password": "PASSWORD",
+    "tds_version": "7.0"
+  }
+}
