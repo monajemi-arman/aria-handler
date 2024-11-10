@@ -1,8 +1,0 @@
-setup.py
-aria_handler/__init__.py
-aria_handler/aria_handler.py
-aria_handler.egg-info/PKG-INFO
-aria_handler.egg-info/SOURCES.txt
-aria_handler.egg-info/dependency_links.txt
-aria_handler.egg-info/requires.txt
-aria_handler.egg-info/top_level.txt
