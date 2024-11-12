@@ -111,7 +111,10 @@ class AriaHandler:
         """
         arguments = product_id
         rows = self.exec(command, arguments)
-        return rows[0][0]
+        stock = rows[0][0]
+        if stock < 0:
+            stock = 0
+        return stock
 
     def get_stocks(self):
         command = "SELECT code,Mojodi FROM Mojodi"
@@ -120,7 +123,10 @@ class AriaHandler:
 
         # Convert stock numbers to integer
         for row in rows:
-            new_row = (row[0], int(row[1]))
+            stock = int(row[1])
+            if stock < 0:
+                stock = 0
+            new_row = (row[0], stock)
             result.append(new_row)
 
         return result
