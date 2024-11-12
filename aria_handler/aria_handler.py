@@ -91,6 +91,17 @@ class AriaHandler:
         rows = self.exec(command, arguments)
         return rows[0][0]
 
+    def get_prices(self):
+        command = "SELECT [Code],[Price] FROM [Drug].[dbo].[Kala]"
+        rows = self.exec(command)
+        result = []
+
+        for row in rows:
+            if row[0] and row[1]:
+                result.append(row)
+
+        return result
+
     def get_stock(self, product_id):
         command = """
             exec sp_executesql N'
