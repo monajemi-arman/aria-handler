@@ -113,6 +113,18 @@ class AriaHandler:
         rows = self.exec(command, arguments)
         return rows[0][0]
 
+    def get_stocks(self):
+        command = "SELECT code,Mojodi FROM Mojodi"
+        rows = self.exec(command)
+        result = []
+
+        # Convert stock numbers to integer
+        for row in rows:
+            new_row = (row[0], int(row[1]))
+            result.append(new_row)
+
+        return result
+
     def update_facheader_code(self, facheader_id, code):
         command = """
             exec sp_executesql N'UPDATE DRUG.dbo.FacHeder
