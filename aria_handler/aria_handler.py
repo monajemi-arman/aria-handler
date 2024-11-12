@@ -131,6 +131,22 @@ class AriaHandler:
 
         return result
 
+    def get_code_stock_prices(self):
+        command = """
+                SELECT 
+                    Mojodi.code,
+                    Mojodi.Mojodi,
+                    Kala.Price
+                FROM 
+                    Mojodi
+                JOIN 
+                    [Drug].[dbo].[Kala] AS Kala
+                ON 
+                    Mojodi.code = Kala.Code;
+        """
+        rows = self.exec(command)
+        return rows
+
     def update_facheader_code(self, facheader_id, code):
         command = """
             exec sp_executesql N'UPDATE DRUG.dbo.FacHeder
