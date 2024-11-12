@@ -19,7 +19,6 @@ class AriaHandler:
         # Connect
         self.connect()
 
-
     def connect(self, retry_interval=5, max_retries=3):
         """Attempts to connect to the database, and starts a keep-alive thread if successful."""
         attempt = 0
@@ -135,7 +134,12 @@ class AriaHandler:
         command = """
                 SELECT 
                     Mojodi.code,
-                    Mojodi.Mojodi,
+                    CAST(
+                        CASE 
+                            WHEN Mojodi.Mojodi < 0 THEN 0 
+                            ELSE Mojodi.Mojodi 
+                        END AS INT
+                    ) AS Mojodi,
                     Kala.Price
                 FROM 
                     Mojodi
